@@ -1,1 +1,177 @@
-<h1> welcome to home page</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FWI Prediction — Algerian Forest Fire Risk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f5f2;
+    --panel:#ffffff;
+    --ink:#1b1c19;
+    --muted:#5f6259;
+    --line:#dcdad3;
+    --accent:#a34321;
+    --sage:#556b53;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:'IBM Plex Sans',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 32px;}
+
+  nav.top{border-bottom:1px solid var(--line);}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:18px 0;}
+  .brand{font-weight:600;font-size:15px;letter-spacing:.01em;display:flex;align-items:center;gap:9px;}
+  .brand .dot{width:8px;height:8px;background:var(--accent);border-radius:1px;}
+  .btn{
+    font-size:13.5px;font-weight:500;color:#fff;background:var(--ink);
+    padding:10px 18px;border-radius:4px;text-decoration:none;border:1px solid var(--ink);
+  }
+  .btn:hover{background:#000;}
+  .btn-outline{color:var(--ink);background:transparent;border:1px solid var(--line);}
+  .btn-outline:hover{border-color:var(--ink);}
+
+  .hero{padding:56px 0 40px;border-bottom:1px solid var(--line);}
+  .label{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--sage);margin-bottom:16px;
+  }
+  h1{font-weight:500;font-size:clamp(30px,4vw,42px);line-height:1.18;letter-spacing:-0.01em;margin:0 0 18px;max-width:680px;}
+  .lede{font-size:16px;line-height:1.65;color:var(--muted);max-width:560px;margin-bottom:32px;}
+  .hero-actions{display:flex;gap:12px;flex-wrap:wrap;}
+
+  .scale{margin-top:44px;border:1px solid var(--line);border-radius:6px;background:var(--panel);padding:22px 24px;}
+  .scale-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;flex-wrap:wrap;gap:6px;}
+  .scale-title{font-size:12px;letter-spacing:.04em;color:var(--muted);}
+  .scale-track{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-bottom:8px;}
+  .scale-seg{height:8px;background:var(--line);border-radius:2px;}
+  .scale-seg.on{background:var(--accent);}
+  .scale-labels{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);}
+  .scale-note{font-size:12px;color:var(--muted);margin-top:12px;}
+
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:40px 0 60px;background:var(--panel);}
+  .stat{padding:22px 26px;border-right:1px solid var(--line);}
+  .stat:last-child{border-right:none;}
+  .stat-num{font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:26px;}
+  .stat-label{font-size:12.5px;color:var(--muted);margin-top:6px;}
+
+  .section-label{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--sage);margin-bottom:8px;}
+  h2{font-weight:500;font-size:24px;margin:0 0 30px;}
+  .steps{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--panel);margin-bottom:70px;}
+  .step{display:grid;grid-template-columns:70px 1fr;gap:20px;padding:22px 26px;border-bottom:1px solid var(--line);}
+  .step:last-child{border-bottom:none;}
+  .step-num{font-family:'IBM Plex Mono',monospace;color:var(--accent);font-size:13px;padding-top:2px;}
+  .step h3{font-size:15.5px;font-weight:600;margin:0 0 6px;}
+  .step p{font-size:14px;line-height:1.6;color:var(--muted);margin:0;max-width:520px;}
+
+  footer{border-top:1px solid var(--line);padding:26px 0 40px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12.5px;color:var(--muted);}
+
+  @media (max-width:680px){
+    .stats{grid-template-columns:1fr;}
+    .stat{border-right:none;border-bottom:1px solid var(--line);}
+    .stat:last-child{border-bottom:none;}
+    .step{grid-template-columns:1fr;}
+  }
+  a:focus-visible, button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <div class="wrap nav-inner">
+    <div class="brand"><span class="dot"></span> Fire Weather Index Estimator</div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <section class="hero">
+    <div class="label">Regression model · Bejaia &amp; Sidi Bel-abbes, Algeria</div>
+    <h1>Estimate wildfire weather risk from nine field readings.</h1>
+    <p class="lede">
+      Trained on daily weather and fuel-moisture observations collected across two regions of
+      Algeria during the 2012 fire season, this tool returns a Fire Weather Index (FWI) score
+      from temperature, humidity, wind, rainfall, and standard fuel-moisture codes.
+    </p>
+    <div class="hero-actions">
+      <a class="btn" href="{{ url_for('predict_data') }}">Run a prediction</a>
+      <a class="btn btn-outline" href="#process">How the model works</a>
+    </div>
+
+    <div class="scale">
+      <div class="scale-head">
+        <span class="scale-title mono">FWI SCALE — REFERENCE ONLY</span>
+        <span class="scale-title mono">TYPICAL RANGE 0–30+</span>
+      </div>
+      <div class="scale-track">
+        <div class="scale-seg on"></div>
+        <div class="scale-seg on"></div>
+        <div class="scale-seg"></div>
+        <div class="scale-seg"></div>
+        <div class="scale-seg"></div>
+      </div>
+      <div class="scale-labels">
+        <span>Low</span><span>Moderate</span><span>High</span><span>Very high</span><span>Extreme</span>
+      </div>
+      <p class="scale-note">Illustrative banding only — your predicted score is shown after submitting the form.</p>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num mono">244</div>
+        <div class="stat-label">Daily records, Jun–Sep 2012</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num mono">2</div>
+        <div class="stat-label">Regions — Bejaia &amp; Sidi Bel-abbes</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num mono">9</div>
+        <div class="stat-label">Weather &amp; fuel-moisture inputs</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="process">
+    <div class="section-label">Process</div>
+    <h2>From field reading to FWI score</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num mono">01</div>
+        <div>
+          <h3>Enter conditions</h3>
+          <p>Temperature, relative humidity, wind speed, rainfall, and fuel-moisture codes (FFMC, DMC, ISI) for a given day and region.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num mono">02</div>
+        <div>
+          <h3>Inputs are standardized</h3>
+          <p>Values are scaled using the same scikit-learn StandardScaler fitted during training, so every feature is on comparable ground.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num mono">03</div>
+        <div>
+          <h3>Ridge regression scores it</h3>
+          <p>The trained model returns a Fire Weather Index — a continuous measure of fire intensity potential for that day.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Data: Algerian Forest Fires Dataset, UCI Machine Learning Repository</span>
+    <span>Flask · scikit-learn · AWS Elastic Beanstalk</span>
+  </footer>
+</div>
+
+</body>
+</html>
