@@ -1,0 +1,47 @@
+/* Design tokens */
+:root{
+  --bg:#f4f2ee;
+  --bg-soft:#eceae4;
+  --panel:#ffffff;
+  --panel-soft:#fbfaf7;
+  --ink:#161412;
+  --ink-soft:#3a3733;
+  --muted:#6b6862;
+  --muted-2:#8a8780;
+  --line:#e3e0d8;
+  --line-strong:#d4d0c6;
+
+  --accent:#c2410c;
+  --accent-soft:#fbe9d8;
+  --accent-ink:#7c2d12;
+  --fire:#c2410c;
+  --fire-soft:#fbe9d8;
+  --safe:#2f6b4e;
+  --safe-soft:#d9efe6;
+
+  --sage:#556b53;
+  --gold:#b8860b;
+
+  --radius:12px;
+  --radius-sm:8px;
+  --shadow:0 1px 2px rgba(22,20,18,.04), 0 8px 24px -12px rgba(22,20,18,.18);
+  --shadow-lg:0 2px 4px rgba(22,20,18,.06), 0 24px 48px -20px rgba(22,20,18,.28);
+}
+
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#1c1a17;
+    --bg-soft:#24221e;
+    --panel:#24221e;
+    --panel-soft:#2a2824;
+    --ink:#f3f0ea;
+    --ink-soft:#d8d3c8;
+    --muted:#a7a297;
+    --muted-2:#858178;
+    --line:#34312c;
+    --line-strong:#403d37;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+    --shadow-lg:0 2px 4px rgba(0,0,0,.3), 0 24px 48px -20px rgba(0,0,0,.6);
+    --accent-soft:#3a2416;
+  }
+}

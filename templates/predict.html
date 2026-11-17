@@ -6,164 +6,308 @@
 <title>Run a Prediction — FWI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500,600&display=swap" rel="stylesheet">
 <style>
+:root{
+  --bg:#f4f2ee;
+  --bg-soft:#eceae4;
+  --panel:#ffffff;
+  --panel-soft:#fbfaf7;
+  --ink:#161412;
+  --ink-soft:#3a3733;
+  --muted:#6b6862;
+  --muted-2:#8a8780;
+  --line:#e3e0d8;
+  --line-strong:#d4d0c6;
+  --accent:#c2410c;
+  --accent-soft:#fbe9d8;
+  --accent-ink:#7c2d12;
+  --fire:#c2410c;
+  --fire-soft:#fbe9d8;
+  --safe:#2f6b4e;
+  --safe-soft:#d9efe6;
+  --radius:12px;
+  --radius-sm:8px;
+  --shadow:0 1px 2px rgba(22,20,18,.04), 0 8px 24px -12px rgba(22,20,18,.18);
+  --shadow-lg:0 2px 4px rgba(22,20,18,.06), 0 24px 48px -20px rgba(22,20,18,.28);
+}
+
+@media (prefers-color-scheme: dark){
   :root{
-    --bg:#f6f5f2;
-    --panel:#ffffff;
-    --ink:#1b1c19;
-    --muted:#5f6259;
-    --line:#dcdad3;
-    --accent:#a34321;
-    --accent-soft:#f2e6de;
-    --sage:#556b53;
+    --bg:#1c1a17;
+    --bg-soft:#24221e;
+    --panel:#24221e;
+    --panel-soft:#2a2824;
+    --ink:#f3f0ea;
+    --ink-soft:#d8d3c8;
+    --muted:#a7a297;
+    --muted-2:#858178;
+    --line:#34312c;
+    --line-strong:#403d37;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+    --shadow-lg:0 2px 4px rgba(0,0,0,.3), 0 24px 48px -20px rgba(0,0,0,.6);
+    --accent-soft:#3a2416;
   }
-  *{box-sizing:border-box;}
-  body{
-    margin:0;background:var(--bg);color:var(--ink);
-    font-family:'IBM Plex Sans',sans-serif;-webkit-font-smoothing:antialiased;
-  }
-  a{color:inherit;text-decoration:none;}
-  .mono{font-family:'IBM Plex Mono',monospace;}
-  .wrap{max-width:760px;margin:0 auto;padding:0 32px 80px;}
+}
 
-  nav.top{border-bottom:1px solid var(--line);margin-bottom:36px;}
-  .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:18px 0;}
-  .brand{font-weight:600;font-size:15px;display:flex;align-items:center;gap:9px;}
-  .brand .dot{width:8px;height:8px;background:var(--accent);border-radius:1px;}
-  .back{
-    font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px;
-    border:1px solid var(--line);padding:8px 14px;border-radius:4px;
-  }
-  .back:hover{color:var(--ink);border-color:var(--ink);}
-  .back svg{width:13px;height:13px;}
+*,
+*::before,
+*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Inter',sans-serif;line-height:1.6;color:var(--ink);
+  background:var(--bg);-webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+button{border:none;background:none;cursor:pointer;font:inherit}
 
-  .label{
-    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.08em;
-    text-transform:uppercase;color:var(--sage);margin-bottom:14px;
-  }
-  h1{font-weight:500;font-size:clamp(26px,3.6vw,34px);line-height:1.2;margin:0 0 14px;}
-  .lede{color:var(--muted);font-size:15px;line-height:1.6;max-width:520px;margin-bottom:32px;}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
 
-  .result-line{
-    font-size:15.5px;color:var(--ink);margin:0 0 28px;
-    padding-bottom:20px;border-bottom:1px solid var(--line);
-  }
-  .result-line span{font-family:'IBM Plex Mono',monospace;font-weight:500;color:var(--accent);}
+/* Nav */
+.topnav{
+  background:var(--panel);
+  border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:10;
+}
+.nav-inner{
+  display:flex;align-items:center;justify-content:space-between;
+  height:72px;
+}
+.brand{
+  display:flex;align-items:center;gap:12px;
+  font-weight:600;font-size:18px;
+}
+.brand-mark{
+  width:32px;height:32px;background:var(--accent);border-radius:var(--radius-sm);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-family:'JetBrains Mono',monospace;font-size:14px;
+}
+.nav-links{
+  display:flex;gap:24px;
+}
+.nav-link{
+  font-size:15px;font-weight:500;color:var(--muted-2);
+  transition:color .15s;
+}
+.nav-link:hover{color:var(--ink-soft)}
 
-  form{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:32px;}
-  .group-label{
-    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;
-    text-transform:uppercase;color:var(--muted);margin:0 0 14px;
-    padding-bottom:10px;border-bottom:1px solid var(--line);
-  }
-  .group-label.spaced{margin-top:26px;}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-  .field{margin-bottom:16px;}
-  .field label{display:block;font-size:13px;color:var(--muted);margin-bottom:7px;}
-  .field label b{color:var(--ink);font-weight:500;}
-  input, select{
-    width:100%;background:#fbfaf8;border:1px solid var(--line);color:var(--ink);
-    font-family:'IBM Plex Mono',monospace;font-size:14px;padding:11px 13px;border-radius:5px;
-  }
-  input::placeholder{color:#9a9d93;}
-  input:focus, select:focus{outline:none;border-color:var(--accent);}
-  select{
-    appearance:none;-webkit-appearance:none;
-    background-image:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235f6259' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-    background-repeat:no-repeat;background-position:right 13px center;background-size:15px;padding-right:36px;
-  }
+/* Form page layout */
+.form-page{
+  padding:80px 0 120px;
+}
+.form-header{
+  margin-bottom:40px;text-align:center;max-width:640px;margin-left:auto;margin-right:auto;
+}
+.form-label{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  font-weight:600;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--sage);margin-bottom:12px;display:block;
+}
+.form-title{
+  font-size:clamp(28px,4vw,36px);font-weight:600;line-height:1.2;margin-bottom:16px;
+}
+.form-desc{
+  font-size:16px;color:var(--muted-2);line-height:1.7;
+}
 
-  .submit{
-    width:100%;margin-top:10px;font-weight:600;font-size:14.5px;color:#fff;
-    background:var(--ink);border:none;padding:14px;border-radius:5px;cursor:pointer;
-  }
-  .submit:hover{background:#000;}
+/* Form */
+.form-container{
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:var(--radius);padding:40px;box-shadow:var(--shadow);
+  max-width:1000px;margin:0 auto;
+}
+.form-sections{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:40px;margin-top:32px;
+}
+@media (max-width:768px){
+  .form-sections{grid-template-columns:1fr;}
+}
+.form-section{}
 
-  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible{
-    outline:2px solid var(--accent);outline-offset:2px;
-  }
-  @media (max-width:560px){.grid2{grid-template-columns:1fr;}}
+.input-group{
+  margin-bottom:24px;
+}
+.input-label{
+  display:block;font-size:14px;font-weight:500;
+  color:var(--muted-2);margin-bottom:8px;
+}
+.input-control{
+  width:100%;padding:12px 16px;border:1px solid var(--line);
+  border-radius:var(--radius-sm);background:var(--panel-soft);
+  font-size:15px;transition:border-color .15s;
+}
+.input-control:focus{
+  outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);
+}
+.input-hint{
+  font-size:12px;color:var(--muted);margin-top:4px;
+}
+
+select.input-control{
+  appearance:none;background-image:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b6862' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;background-size:16px;
+  padding-right:40px;
+}
+
+.submit-btn{
+  background:var(--ink);color:#fff;padding:14px 28px;
+  border-radius:var(--radius);font-weight:600;font-size:15px;
+  transition:all .2s;cursor:pointer;display:inline-flex;
+  align-items:center;justify-content:center;min-width:140px;
+}
+.submit-btn:hover{
+  background:#000;transform:translateY(-1px);box-shadow:var(--shadow-lg);
+}
+
+.result-card{
+  background:var(--panel-soft);border:1px solid var(--line);
+  border-radius:var(--radius);padding:32px;margin-top:40px;
+  text-align:center;
+}
+.result-value{
+  font-family:'JetBrains Mono',monospace;font-size:48px;
+  font-weight:700;color:var(--accent);margin:16px 0;
+}
+.result-label{
+  font-size:18px;color:var(--muted-2);margin-bottom:8px;
+}
+.result-badge{
+  background:var(--accent-soft);color:var(--accent-ink);
+  border:1px solid var(--accent-soft);padding:8px 20px;
+  border-radius:20px;font-weight:600;font-size:15px;
+  display:inline-block;margin:8px 0;
+}
+
+/* Footer */
+footer{
+  background:var(--panel);border-top:1px solid var(--line);
+  padding:40px 0;margin-top:80px;
+}
+.foot-inner{
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:16px;
+}
+.foot-links{
+  display:flex;gap:24px;
+}
+.foot-link{
+  font-size:14px;color:var(--muted-2);
+  transition:color .15s;
+}
+.foot-link:hover{color:var(--ink-soft)}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <nav class="top">
-    <div class="nav-inner">
-      <div class="brand"><span class="dot"></span> Fire Weather Index Estimator</div>
-      <a class="back" href="{{ url_for('home') }}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M11 5l-7 7 7 7"/></svg>
-        Home
-      </a>
+<nav class="topnav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="/">
+      <div class="brand-mark">FW</div>
+      <span>Fire Weather Index Estimator</span>
+    </a>
+    <div class="nav-links">
+      <a class="nav-link" href="/">Home</a>
+      <a class="nav-link active" href="/predictdata">Predict FWI</a>
+      <a class="nav-link" href="/predictfire">Predict Fire Risk</a>
     </div>
-  </nav>
+  </div>
+</nav>
 
-  <div class="label">New prediction</div>
-  <h1>Enter today's field readings</h1>
-  <p class="lede">Fill in the values below. Inputs are standardized automatically before the model scores the Fire Weather Index.</p>
-
-  <p class="result-line">Predicted Fire Weather Index: <span>{{ result }}</span></p>
-
-  <form action="{{ url_for('predict_data') }}" method="post">
-
-    <p class="group-label">Weather readings</p>
-    <div class="grid2">
-      <div class="field">
-        <label for="Temperature">Temperature <b>(°C)</b></label>
-        <input type="text" id="Temperature" name="Temperature" placeholder="e.g. 32" required>
-      </div>
-      <div class="field">
-        <label for="RH">Relative Humidity <b>(%)</b></label>
-        <input type="text" id="RH" name="RH" placeholder="e.g. 45" required>
-      </div>
-      <div class="field">
-        <label for="Ws">Wind Speed <b>(km/h)</b></label>
-        <input type="text" id="Ws" name="Ws" placeholder="e.g. 15" required>
-      </div>
-      <div class="field">
-        <label for="Rain">Rain <b>(mm)</b></label>
-        <input type="text" id="Rain" name="Rain" placeholder="e.g. 0" required>
-      </div>
+<div class="form-page">
+  <div class="wrap">
+    <div class="form-header">
+      <div class="form-label">New prediction</div>
+      <h1 class="form-title">Enter today's field readings</h1>
+      <p class="form-desc">
+        Fill in the values below. Inputs are standardized automatically before the model scores the Fire Weather Index.
+      </p>
     </div>
 
-    <p class="group-label spaced">Fuel moisture &amp; spread codes</p>
-    <div class="grid2">
-      <div class="field">
-        <label for="FFMC">Fine Fuel Moisture Code</label>
-        <input type="text" id="FFMC" name="FFMC" placeholder="e.g. 84.5" required>
-      </div>
-      <div class="field">
-        <label for="DMC">Duff Moisture Code</label>
-        <input type="text" id="DMC" name="DMC" placeholder="e.g. 20.1" required>
-      </div>
-      <div class="field">
-        <label for="ISI">Initial Spread Index</label>
-        <input type="text" id="ISI" name="ISI" placeholder="e.g. 5.2" required>
-      </div>
-    </div>
+    <div class="form-container">
+      <form action="/predictdata" method="post">
+        <div class="form-sections">
+          <div class="form-section">
+            <p class="form-label">Weather readings</p>
+            <div class="input-group">
+              <label class="input-label" for="Temperature">Temperature <b>(°C)</b></label>
+              <input class="input-control" type="text" id="Temperature" name="Temperature" placeholder="e.g. 32" required>
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="RH">Relative Humidity <b>(%)</b></label>
+              <input class="input-control" type="text" id="RH" name="RH" placeholder="e.g. 45" required>
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="Ws">Wind Speed <b>(km/h)</b></label>
+              <input class="input-control" type="text" id="Ws" name="Ws" placeholder="e.g. 15" required>
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="Rain">Rain <b>(mm)</b></label>
+              <input class="input-control" type="text" id="Rain" name="Rain" placeholder="e.g. 0" required>
+            </div>
+          </div>
 
-    <p class="group-label spaced">Context</p>
-    <div class="grid2">
-      <div class="field">
-        <label for="Classes">Fire Class</label>
-        <select id="Classes" name="Classes" required>
-          <option value="" disabled selected>Select…</option>
-          <option value="0">Not fire</option>
-          <option value="1">Fire</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="Region">Region</label>
-        <select id="Region" name="Region" required>
-          <option value="" disabled selected>Select…</option>
-          <option value="0">Bejaia</option>
-          <option value="1">Sidi Bel-abbes</option>
-        </select>
-      </div>
-    </div>
+          <div class="form-section">
+            <p class="form-label">Fuel moisture & spread codes</p>
+            <div class="input-group">
+              <label class="input-label" for="FFMC">Fine Fuel Moisture Code</label>
+              <input class="input-control" type="text" id="FFMC" name="FFMC" placeholder="e.g. 84.5" required>
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="DMC">Duff Moisture Code</label>
+              <input class="input-control" type="text" id="DMC" name="DMC" placeholder="e.g. 20.1" required>
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="ISI">Initial Spread Index</label>
+              <input class="input-control" type="text" id="ISI" name="ISI" placeholder="e.g. 5.2" required>
+            </div>
+          </div>
 
-    <button type="submit" class="submit">Predict FWI</button>
-  </form>
+          <div class="form-section">
+            <p class="form-label spaced" style="margin-top:24px;">Context</p>
+            <div class="input-group">
+              <label class="input-label" for="Classes">Fire Class</label>
+              <select class="input-control" id="Classes" name="Classes" required>
+                <option value="" disabled selected>Select…</option>
+                <option value="0">Not fire</option>
+                <option value="1">Fire</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="Region">Region</label>
+              <select class="input-control" id="Region" name="Region" required>
+                <option value="" disabled selected>Select…</option>
+                <option value="0">Bejaia</option>
+                <option value="1">Sidi Bel-abbes</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:32px;text-align:center;">
+          <button type="submit" class="submit-btn">Predict FWI</button>
+        </div>
+      </form>
+
+      {% if result is not none %}
+      <div class="result-card">
+        <div class="result-label">Predicted Fire Weather Index</div>
+        <div class="result-value">{{ result }}</div>
+        <div class="result-badge">FWI Score</div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
 </div>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-inner">
+      <span>Data: Algerian Forest Fires Dataset, UCI Machine Learning Repository</span>
+      <div class="foot-links">
+        <a class="foot-link" href="/">Home</a>
+        <a class="foot-link" href="/predictdata">Predict FWI</a>
+        <a class="foot-link" href="/predictfire">Predict Fire Risk</a>
+      </div>
+    </div>
+  </div>
+</footer>
 </body>
 </html>

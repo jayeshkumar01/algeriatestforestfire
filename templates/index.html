@@ -3,175 +3,470 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FWI Prediction — Algerian Forest Fire Risk</title>
+<title>Algerian Forest Fire Weather Prediction</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+:root{
+  --bg:#f4f2ee;
+  --bg-soft:#eceae4;
+  --panel:#ffffff;
+  --panel-soft:#fbfaf7;
+  --ink:#161412;
+  --ink-soft:#3a3733;
+  --muted:#6b6862;
+  --muted-2:#8a8780;
+  --line:#e3e0d8;
+  --line-strong:#d4d0c6;
+  --accent:#c2410c;
+  --accent-soft:#fbe9d8;
+  --accent-ink:#7c2d12;
+  --fire:#c2410c;
+  --fire-soft:#fbe9d8;
+  --safe:#2f6b4e;
+  --safe-soft:#d9efe6;
+  --sage:#556b53;
+  --gold:#b8860b;
+  --radius:12px;
+  --radius-sm:8px;
+  --shadow:0 1px 2px rgba(22,20,18,.04), 0 8px 24px -12px rgba(22,20,18,.18);
+  --shadow-lg:0 2px 4px rgba(22,20,18,.06), 0 24px 48px -20px rgba(22,20,18,.28);
+}
+
+@media (prefers-color-scheme: dark){
   :root{
-    --bg:#f6f5f2;
-    --panel:#ffffff;
-    --ink:#1b1c19;
-    --muted:#5f6259;
-    --line:#dcdad3;
-    --accent:#a34321;
-    --sage:#556b53;
+    --bg:#1c1a17;
+    --bg-soft:#24221e;
+    --panel:#24221e;
+    --panel-soft:#2a2824;
+    --ink:#f3f0ea;
+    --ink-soft:#d8d3c8;
+    --muted:#a7a297;
+    --muted-2:#858178;
+    --line:#34312c;
+    --line-strong:#403d37;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+    --shadow-lg:0 2px 4px rgba(0,0,0,.3), 0 24px 48px -20px rgba(0,0,0,.6);
+    --accent-soft:#3a2416;
   }
-  *{box-sizing:border-box;}
-  body{
-    margin:0;background:var(--bg);color:var(--ink);
-    font-family:'IBM Plex Sans',sans-serif;
-    -webkit-font-smoothing:antialiased;
-  }
-  a{color:inherit;}
-  .mono{font-family:'IBM Plex Mono',monospace;}
-  .wrap{max-width:1040px;margin:0 auto;padding:0 32px;}
+}
 
-  nav.top{border-bottom:1px solid var(--line);}
-  .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:18px 0;}
-  .brand{font-weight:600;font-size:15px;letter-spacing:.01em;display:flex;align-items:center;gap:9px;}
-  .brand .dot{width:8px;height:8px;background:var(--accent);border-radius:1px;}
-  .btn{
-    font-size:13.5px;font-weight:500;color:#fff;background:var(--ink);
-    padding:10px 18px;border-radius:4px;text-decoration:none;border:1px solid var(--ink);
-  }
-  .btn:hover{background:#000;}
-  .btn-outline{color:var(--ink);background:transparent;border:1px solid var(--line);}
-  .btn-outline:hover{border-color:var(--ink);}
+*,
+*::before,
+*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Inter',sans-serif;line-height:1.6;color:var(--ink);
+  background:var(--bg);-webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;height:auto;display:block}
+button{border:none;background:none;cursor:pointer;font:inherit}
+ul{list-style:none}
 
-  .hero{padding:56px 0 40px;border-bottom:1px solid var(--line);}
-  .label{
-    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.08em;
-    text-transform:uppercase;color:var(--sage);margin-bottom:16px;
-  }
-  h1{font-weight:500;font-size:clamp(30px,4vw,42px);line-height:1.18;letter-spacing:-0.01em;margin:0 0 18px;max-width:680px;}
-  .lede{font-size:16px;line-height:1.65;color:var(--muted);max-width:560px;margin-bottom:32px;}
-  .hero-actions{display:flex;gap:12px;flex-wrap:wrap;}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
 
-  .scale{margin-top:44px;border:1px solid var(--line);border-radius:6px;background:var(--panel);padding:22px 24px;}
-  .scale-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;flex-wrap:wrap;gap:6px;}
-  .scale-title{font-size:12px;letter-spacing:.04em;color:var(--muted);}
-  .scale-track{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-bottom:8px;}
-  .scale-seg{height:8px;background:var(--line);border-radius:2px;}
-  .scale-seg.on{background:var(--accent);}
-  .scale-labels{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);}
-  .scale-note{font-size:12px;color:var(--muted);margin-top:12px;}
+/* Nav */
+.topnav{
+  background:var(--panel);
+  border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:10;
+}
+.nav-inner{
+  display:flex;align-items:center;justify-content:space-between;
+  height:72px;
+}
+.brand{
+  display:flex;align-items:center;gap:12px;
+  font-weight:600;font-size:18px;
+}
+.brand-mark{
+  width:32px;height:32px;background:var(--accent);border-radius:var(--radius-sm);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-family:'JetBrains Mono',monospace;font-size:14px;
+}
+.nav-links{
+  display:flex;gap:24px;
+}
+.nav-link{
+  font-size:15px;font-weight:500;color:var(--muted-2);
+  transition:color .15s;
+}
+.nav-link:hover{color:var(--ink-soft)}
+.nav-link.active{color:var(--accent);font-weight:600}
 
-  .stats{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:40px 0 60px;background:var(--panel);}
-  .stat{padding:22px 26px;border-right:1px solid var(--line);}
-  .stat:last-child{border-right:none;}
-  .stat-num{font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:26px;}
-  .stat-label{font-size:12.5px;color:var(--muted);margin-top:6px;}
+/* Hero */
+.hero{
+  padding:80px 0 64px;
+  border-bottom:1px solid var(--line);
+  display:grid;grid-template-columns:1fr 420px;gap:64px;
+  align-items:center;
+}
+.hero-content{}
+.hero-title{
+  font-size:clamp(32px,4.8vw,56px);font-weight:700;line-height:1.12;
+  margin:16px 0 24px;color:var(--ink);
+}
+.hero-subtitle{
+  font-size:20px;line-height:1.6;color:var(--muted-2);
+  margin-bottom:32px;
+}
+.hero-buttons{
+  display:flex;gap:16px;flex-wrap:wrap;
+}
+.btn{
+  padding:12px 24px;border-radius:var(--radius);
+  font-weight:600;font-size:15px;transition:all .2s;
+  display:inline-flex;align-items:center;justify-content:center;
+}
+.btn-primary{
+  background:var(--accent);color:#fff;
+  border:1px solid var(--accent);
+}
+.btn-primary:hover{
+  background:#a83309;transform:translateY(-1px);box-shadow:var(--shadow-lg);
+}
+.btn-secondary{
+  background:transparent;color:var(--ink);
+  border:1px solid var(--line);
+}
+.btn-secondary:hover{
+  border-color:var(--line-strong);transform:translateY(-1px);
+}
+.hero-visual{}
+.hero-stats{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+  margin-top:40px;
+}
+.stat-box{
+  background:var(--panel-soft);border:1px solid var(--line);
+  border-radius:var(--radius);padding:20px;
+}
+.stat-num{
+  font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;
+  color:var(--accent-ink);margin-bottom:4px;
+}
+.stat-label{
+  font-size:14px;color:var(--muted-2);
+}
 
-  .section-label{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--sage);margin-bottom:8px;}
-  h2{font-weight:500;font-size:24px;margin:0 0 30px;}
-  .steps{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--panel);margin-bottom:70px;}
-  .step{display:grid;grid-template-columns:70px 1fr;gap:20px;padding:22px 26px;border-bottom:1px solid var(--line);}
-  .step:last-child{border-bottom:none;}
-  .step-num{font-family:'IBM Plex Mono',monospace;color:var(--accent);font-size:13px;padding-top:2px;}
-  .step h3{font-size:15.5px;font-weight:600;margin:0 0 6px;}
-  .step p{font-size:14px;line-height:1.6;color:var(--muted);margin:0;max-width:520px;}
+/* Cards */
+.section{
+  padding:80px 0;
+}
+.section-head{
+  display:flex;flex-direction:column;gap:16px;margin-bottom:48px;
+  max-width:800px;
+}
+.section-label{
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  font-weight:600;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--sage);
+}
+.section-title{
+  font-size:clamp(28px,4vw,40px);font-weight:600;line-height:1.2;
+}
+.section-desc{
+  font-size:18px;color:var(--muted-2);line-height:1.7;
+}
 
-  footer{border-top:1px solid var(--line);padding:26px 0 40px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12.5px;color:var(--muted);}
+/* Steps */
+.steps-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:32px;
+}
+.step-card{
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:var(--radius);padding:32px;position:relative;
+  transition:all .2s;
+}
+.step-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.step-number{
+  font-family:'JetBrains Mono',monospace;font-size:20px;
+  font-weight:600;color:var(--accent);margin-bottom:16px;
+}
+.step-title{
+  font-size:20px;font-weight:600;margin-bottom:12px;
+}
+.step-text{
+  font-size:16px;color:var(--muted-2);line-height:1.6;
+}
 
-  @media (max-width:680px){
-    .stats{grid-template-columns:1fr;}
-    .stat{border-right:none;border-bottom:1px solid var(--line);}
-    .stat:last-child{border-bottom:none;}
-    .step{grid-template-columns:1fr;}
-  }
-  a:focus-visible, button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+/* Scale indicator */
+.scale{
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:var(--radius);padding:32px;margin:40px 0;
+}
+.scale-track{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:20px 0;
+}
+.scale-seg{
+  height:12px;background:var(--line);border-radius:6px;
+  transition:background .3s;
+}
+.scale-seg.on{background:var(--accent)}
+.scale-labels{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:8px;
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  color:var(--muted-2);
+}
+
+/* Footer */
+footer{
+  background:var(--panel);border-top:1px solid var(--line);
+  padding:40px 0;margin-top:80px;
+}
+.foot-inner{
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:16px;
+}
+.foot-links{
+  display:flex;gap:24px;
+}
+.foot-link{
+  font-size:14px;color:var(--muted-2);
+  transition:color .15s;
+}
+.foot-link:hover{color:var(--ink-soft)}
+
+/* Responsive */
+@media (max-width:968px){
+  .hero{grid-template-columns:1fr;gap:40px;text-align:center;}
+  .hero-buttons{justify-content:center;}
+  .hero-stats{justify-content:center;}
+  .steps-grid{grid-template-columns:1fr;}
+  .foot-inner{flex-direction:column;text-align:center;}
+}
+
+/* Forms */
+.form-wrapper{
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:var(--radius);padding:40px;margin:40px 0;
+}
+.form-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:24px;margin:32px 0;
+}
+.form-group{
+  display:flex;flex-direction:column;gap:8px;
+}
+.form-label{
+  font-size:14px;font-weight:500;color:var(--muted-2);
+}
+.form-control{
+  padding:12px 16px;border:1px solid var(--line);
+  border-radius:var(--radius-sm);background:var(--panel-soft);
+  font-size:15px;transition:border-color .15s;
+}
+.form-control:focus{
+  outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);
+}
+.btn-submit{
+  background:var(--ink);color:#fff;padding:14px 28px;
+  border-radius:var(--radius);font-weight:600;font-size:15px;
+  transition:all .2s;width:100%;
+}
+.btn-submit:hover{
+  background:#000;transform:translateY(-1px);box-shadow:var(--shadow-lg);
+}
+
+.result-display{
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:var(--radius);padding:32px;margin:32px 0;
+  text-align:center;
+}
+.result-value{
+  font-family:'JetBrains Mono',monospace;font-size:36px;
+  font-weight:700;color:var(--accent);margin:16px 0;
+}
+.result-label{
+  font-size:16px;color:var(--muted-2);
+}
+.fire-badge{
+  background:var(--fire-soft);color:var(--fire);
+  border:1px solid var(--fire-soft);
+  padding:8px 16px;border-radius:20px;
+  font-weight:600;font-size:14px;display:inline-block;
+  margin:16px 0;
+}
+.not-fire-badge{
+  background:var(--safe-soft);color:var(--safe);
+  border:1px solid var(--safe-soft);
+  padding:8px 16px;border-radius:20px;
+  font-weight:600;font-size:14px;display:inline-block;
+  margin:16px 0;
+}
 </style>
 </head>
 <body>
-
-<nav class="top">
+<nav class="topnav">
   <div class="wrap nav-inner">
-    <div class="brand"><span class="dot"></span> Fire Weather Index Estimator</div>
+    <a class="brand" href="/">
+      <div class="brand-mark">FW</div>
+      <span>Fire Weather Index Estimator</span>
+    </a>
+    <div class="nav-links">
+      <a class="nav-link active" href="/">Home</a>
+      <a class="nav-link" href="/predictdata">Predict FWI</a>
+      <a class="nav-link" href="/predictfire">Predict Fire Risk</a>
+    </div>
   </div>
 </nav>
 
 <div class="wrap">
   <section class="hero">
-    <div class="label">Regression model · Bejaia &amp; Sidi Bel-abbes, Algeria</div>
-    <h1>Estimate wildfire weather risk from nine field readings.</h1>
-    <p class="lede">
-      Trained on daily weather and fuel-moisture observations collected across two regions of
-      Algeria during the 2012 fire season, this tool returns a Fire Weather Index (FWI) score
-      from temperature, humidity, wind, rainfall, and standard fuel-moisture codes.
+    <div class="hero-content">
+      <div class="label">RidgeCV · Decision Tree · Bejaia & Sidi Bel-abbes, Algeria</div>
+      <h1 class="hero-title">Estimate wildfire weather risk from field readings.</h1>
+      <p class="hero-subtitle">
+        Trained on daily weather and fuel-moisture observations collected across two regions of Algeria during the 2012 fire season.
+        Choose a Fire Weather Index (FWI) score from the RidgeCV regression, or a Fire / Not-fire call from the Decision Tree classifier.
+      </p>
+      <div class="hero-buttons">
+        <a class="btn btn-primary" href="/predictdata">Predict FWI</a>
+        <a class="btn btn-secondary" href="/predictfire">Predict Fire Risk</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-box">
+          <div class="stat-num">244</div>
+          <div class="stat-label">Daily records, Jun–Sep 2012</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">2</div>
+          <div class="stat-label">Regions — Bejaia & Sidi Bel-abbes</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">9</div>
+          <div class="stat-label">Weather & fuel-moisture inputs</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="scale">
+        <div class="section-label">FWI SCALE — REFERENCE ONLY</div>
+        <div class="scale-track">
+          <div class="scale-seg on"></div>
+          <div class="scale-seg on"></div>
+          <div class="scale-seg"></div>
+          <div class="scale-seg"></div>
+          <div class="scale-seg"></div>
+        </div>
+        <div class="scale-labels">
+          <span>Low</span><span>Moderate</span><span>High</span><span>Very high</span><span>Extreme</span>
+        </div>
+        <p class="scale-note" style="margin-top:12px;font-size:14px;color:var(--muted-2);">
+          Illustrative banding only — your predicted score is shown after submitting the form.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="process" class="section">
+    <div class="section-head">
+      <div class="section-label">Process</div>
+      <h2 class="section-title">From field reading to FWI score</h2>
+      <p class="section-desc">
+        Temperature, relative humidity, wind speed, rainfall, and fuel-moisture codes (FFMC, DMC, ISI) for a given day and region,
+        are standardized using the same scikit-learn StandardScaler fitted during training, then passed through the Ridge regression model
+        for a continuous Fire Weather Index score.
+      </p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-number">01</div>
+        <h3 class="step-title">Enter conditions</h3>
+        <p class="step-text">
+          Temperature, relative humidity, wind speed, rainfall, and fuel-moisture codes (FFMC, DMC, ISI) for a given day and region.
+        </p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">02</div>
+        <h3 class="step-title">Inputs are standardized</h3>
+        <p class="step-text">
+          Values are scaled using the same scikit-learn StandardScaler fitted during training, so every feature is on comparable ground.
+        </p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">03</div>
+        <h3 class="step-title">Ridge regression scores it</h3>
+        <p class="step-text">
+          The trained model returns a Fire Weather Index — a continuous measure of fire intensity potential for that day.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div class="section-label">Models</div>
+      <h2 class="section-title">Two complementary approaches</h2>
+      <p class="section-desc">
+        The RidgeCV regression predicts a continuous FWI score, while the Decision Tree classifier makes binary predictions (Fire / Not fire) with interpretable depth.
+      </p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-number">01</div>
+        <h3 class="step-title">FWI Score (Continuous)</h3>
+        <p class="step-text">
+          RidgeCV regression predicts a Fire Weather Index from 9 features.
+          Output ranges ~0–30+, with higher values indicating greater fire risk.
+        </p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">02</div>
+        <h3 class="step-title">Fire Risk (Binary)</h3>
+        <p class="step-text">
+          Decision Tree with max_depth=3 predicts fire vs. not-fire from 10 features (includes DC and BUI).
+          Simple, fast, and interpretable.
+        </p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">03</div>
+        <h3 class="step-title">Both regions</h3>
+        <p class="step-text">
+          Models are trained on Bejaia and Sidi Bel-abbes data, with Region as an input feature.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="form-wrapper">
+    <h2 style="font-size:28px;margin-bottom:24px;">Quick demo predictions</h2>
+    <p style="color:var(--muted-2);margin-bottom:32px;line-height:1.7;">
+      Try both models with sample inputs. The FWI score estimates fire intensity, while the Fire Risk prediction gives a clear binary classification.
     </p>
-    <div class="hero-actions">
-      <a class="btn" href="{{ url_for('predict_data') }}">Run a prediction</a>
-      <a class="btn btn-outline" href="#process">How the model works</a>
-    </div>
-
-    <div class="scale">
-      <div class="scale-head">
-        <span class="scale-title mono">FWI SCALE — REFERENCE ONLY</span>
-        <span class="scale-title mono">TYPICAL RANGE 0–30+</span>
+    <div class="steps-grid">
+      <div class="step-card" style="text-align:center;">
+        <div class="step-number">01</div>
+        <h3 style="font-size:20px;margin:16px 0 12px;">Predict FWI</h3>
+        <p style="color:var(--muted-2);margin-bottom:24px;line-height:1.6;">
+          Ridge regression — continuous score from 9 weather/fuel features.
+        </p>
+        <a class="btn btn-primary" href="/predictdata" style="text-decoration:none;">Predict FWI</a>
       </div>
-      <div class="scale-track">
-        <div class="scale-seg on"></div>
-        <div class="scale-seg on"></div>
-        <div class="scale-seg"></div>
-        <div class="scale-seg"></div>
-        <div class="scale-seg"></div>
-      </div>
-      <div class="scale-labels">
-        <span>Low</span><span>Moderate</span><span>High</span><span>Very high</span><span>Extreme</span>
-      </div>
-      <p class="scale-note">Illustrative banding only — your predicted score is shown after submitting the form.</p>
-    </div>
-
-    <div class="stats">
-      <div class="stat">
-        <div class="stat-num mono">244</div>
-        <div class="stat-label">Daily records, Jun–Sep 2012</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num mono">2</div>
-        <div class="stat-label">Regions — Bejaia &amp; Sidi Bel-abbes</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num mono">9</div>
-        <div class="stat-label">Weather &amp; fuel-moisture inputs</div>
+      <div class="step-card" style="text-align:center;">
+        <div class="step-number">02</div>
+        <h3 style="font-size:20px;margin:16px 0 12px;">Predict Fire Risk</h3>
+        <p style="color:var(--muted-2);margin-bottom:24px;line-height:1.6;">
+          Decision Tree — binary classification from 10 features.
+        </p>
+        <a class="btn btn-primary" href="/predictfire" style="text-decoration:none;">Predict Fire Risk</a>
       </div>
     </div>
-  </section>
-
-  <section id="process">
-    <div class="section-label">Process</div>
-    <h2>From field reading to FWI score</h2>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num mono">01</div>
-        <div>
-          <h3>Enter conditions</h3>
-          <p>Temperature, relative humidity, wind speed, rainfall, and fuel-moisture codes (FFMC, DMC, ISI) for a given day and region.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num mono">02</div>
-        <div>
-          <h3>Inputs are standardized</h3>
-          <p>Values are scaled using the same scikit-learn StandardScaler fitted during training, so every feature is on comparable ground.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num mono">03</div>
-        <div>
-          <h3>Ridge regression scores it</h3>
-          <p>The trained model returns a Fire Weather Index — a continuous measure of fire intensity potential for that day.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <footer>
-    <span>Data: Algerian Forest Fires Dataset, UCI Machine Learning Repository</span>
-    <span>Flask · scikit-learn · AWS Elastic Beanstalk</span>
-  </footer>
+  </div>
 </div>
 
+<footer>
+  <div class="wrap">
+    <div class="foot-inner">
+      <span>Data: Algerian Forest Fires Dataset, UCI Machine Learning Repository</span>
+      <div class="foot-links">
+        <a class="foot-link" href="/">Home</a>
+        <a class="foot-link" href="/predictdata">Predict FWI</a>
+        <a class="foot-link" href="/predictfire">Predict Fire Risk</a>
+      </div>
+    </div>
+  </div>
+</footer>
 </body>
 </html>
